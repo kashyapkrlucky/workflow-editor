@@ -1,3 +1,4 @@
+import { CANVAS_CONSTANTS } from "@/constants";
 import { useCallback } from "react";
 
 export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
@@ -22,5 +23,21 @@ export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
     ctx.scale(dpr, dpr);
   }, [canvasRef]);
 
-  return { setupCanvas };
+  
+  /**
+   * Clear canvas with white background
+   */
+  const clearCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = CANVAS_CONSTANTS.BACKGROUND_COLOR;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }, [canvasRef]);
+
+  return { setupCanvas, clearCanvas };  
 };

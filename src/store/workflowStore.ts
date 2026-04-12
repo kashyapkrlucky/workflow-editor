@@ -18,6 +18,9 @@ interface WorkflowState {
   // Selection and connection actions
   setSelectedNode: (nodeId: string | null) => void;      // Set the currently selected node
   connectNodes: (fromNodeId: string, toNodeId: string) => void; // Create an edge between two nodes
+
+  setWorkflow: (workflow: Workflow) => void;
+  clearWorkflow: () => void;
 }
 
 /**
@@ -112,6 +115,23 @@ export const useWorkflowStore = create<WorkflowState>((set) => ({
       };
     });
   },
+
+  setWorkflow: (workflow: Workflow) => {
+    set({ 
+      workflow: { ...workflow },
+      selectedNodeId: null
+    });
+  },
+
+  clearWorkflow: () => {
+    set({
+      workflow: {
+        nodes: [],
+        edges: []
+      },
+      selectedNodeId: null
+    });
+  }
 }));
 
 // Selector hooks for accessing specific parts of the store state

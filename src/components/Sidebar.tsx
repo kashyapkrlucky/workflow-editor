@@ -1,7 +1,13 @@
+import { useWorkflowStore } from "@/store/workflowStore";
+
 export function Sidebar() {
+  const { workflow } = useWorkflowStore();
+
   return (
-    <div className="w-64 border-r border-gray-200 p-4">
-      <p className="text-xs mb-2 uppercase font-medium text-gray-700">Node Actions</p>
+    <div className="w-64 border-l border-gray-200 p-4">
+      <p className="text-xs mb-2 uppercase font-medium text-gray-700">
+        Node Actions
+      </p>
       <div className="flex flex-col gap-2">
         <div className="flex flex-row gap-2">
           <input
@@ -17,8 +23,9 @@ export function Sidebar() {
         </div>
         <div>
           <textarea
-            className="w-full px-2 py-1 border border-gray-300 rounded-md text-xs"
+            className="w-full px-2 py-1 border border-gray-300 rounded-md text-xs code"
             placeholder="Variables (JSON)"
+            rows={5}
           ></textarea>
         </div>
         <div className="flex flex-row gap-2">
@@ -31,10 +38,13 @@ export function Sidebar() {
         </div>
       </div>
 
-      <p className="text-xs mt-4 mb-2 uppercase font-medium text-gray-700">Workflow Json</p>
+      <p className="text-xs mt-4 mb-2 uppercase font-medium text-gray-700">
+        Workflow Json
+      </p>
       <textarea
         className="w-full px-2 py-1 border border-gray-300 rounded-md text-xs"
         rows={10}
+        value={JSON.stringify(workflow, null, 2)}
         placeholder="Workflow JSON"
       ></textarea>
     </div>
