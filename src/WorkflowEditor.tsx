@@ -1,7 +1,7 @@
-import { NavBar } from "./components/NavBar";
-import { Toolbar } from "./components/Toolbar";
-import { CanvasEditor } from "./components/CanvasEditor";
-import { Sidebar } from "./components/Sidebar";
+import { NavBar } from "./components/layout/NavBar";
+import { Toolbar } from "./components/layout/Toolbar";
+import { CanvasEditor } from "./components/canvas/CanvasEditor";
+import { Sidebar } from "./components/layout/Sidebar";
 
 export function WorkflowEditor() {
   return (

@@ -7,8 +7,8 @@ export type NodeType =
   | "task"            // Generic task node
   | "end"             // Exit point of the workflow
   | "custom"          // Custom user-defined node type
-  | "create policy"   // Node for creating policies
-  | "send email";     // Node for sending emails
+  | "create_policy"   // Node for creating policies
+  | "send_email";     // Node for sending emails
 
 /**
  * Represents a single node in the workflow graph.
@@ -16,6 +16,7 @@ export type NodeType =
  */
 export type Node = {
   id: string;                    // Unique identifier for the node
+  name: string;                  // Name of the node
   type: NodeType;               // The type/functionality of this node
   x: number;                    // X coordinate position on the canvas
   y: number;                    // Y coordinate position on the canvas

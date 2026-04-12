@@ -40,6 +40,7 @@ export function Toolbar() {
   const handleButtonClick = useCallback((type: NodeType) => {
     const newNode: Node = {
       id: Date.now().toString(),
+      name: type,
       type: type,
       x: Math.random() * 100,
       y: Math.random() * 100,

@@ -66,19 +66,25 @@ export const useWorkflowStore = create<WorkflowState>((set) => ({
    * @param nodeId - The ID of the node to remove
    */
   deleteNode: (nodeId: string) =>
-    set((state) => ({
-      workflow: {
-        ...state.workflow,
-        nodes: state.workflow.nodes.filter((node) => node.id !== nodeId),
-      },
-    })),
+    set((state) => {
+      const newNodes = state.workflow.nodes.filter((node) => node.id !== nodeId);
+      const newEdges = state.workflow.edges.filter(
+        (edge) => edge.source !== nodeId && edge.target !== nodeId,
+      );
+      return {
+        workflow: {
+          ...state.workflow,
+          nodes: newNodes,
+          edges: newEdges,
+        },
+      };
+    }),
     
   /**
    * Sets the currently selected node.
    * @param nodeId - The ID of the node to select, or null to deselect
    */
   setSelectedNode: (nodeId: string | null) => {
-    console.log("Setting selected node:", nodeId);
     set({ selectedNodeId: nodeId });
   },
 
@@ -107,10 +113,7 @@ export const useWorkflowStore = create<WorkflowState>((set) => ({
       return {
         workflow: {
           ...state.workflow,
-          edges: {
-            ...state.workflow.edges,
-            [edgeId]: newEdge
-          }
+          edges: [...state.workflow.edges, newEdge]
         }
       };
     });

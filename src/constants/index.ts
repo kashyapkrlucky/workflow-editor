@@ -3,9 +3,9 @@ export const CANVAS_CONSTANTS = {
   GRID_COLOR: "#e5e7eb",
   GRID_DOT_SIZE: 1,
   BACKGROUND_COLOR: "#FCFCFC",
-  NODE_SHADOW: "rgba(0, 0, 0, 0.1)",
+  NODE_SHADOW: 'rgba(0, 0, 0, 0.1) 0 4px 6px -1px',
   NODE_WIDTH: 180,
-  NODE_HEIGHT: 120,
+  NODE_HEIGHT: 100,
   NODE_HEADER_HEIGHT: 40,
   NODE_PADDING: 12,
   HANDLE_RADIUS: 6,
@@ -28,7 +28,7 @@ export const NODE_COLORS = {
  * Edge colors
  */
 export const EDGE_COLORS = {
-  DEFAULT: '#0b27db',
+  DEFAULT: '#12d7f1',
   HOVER: '#f59e0b',
   TEMP: '#9ca3af',
 } as const;

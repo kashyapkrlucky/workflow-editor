@@ -47,7 +47,7 @@ export function CanvasEditor() {
 
   const drawNode = useCallback(
     (ctx: CanvasRenderingContext2D, node: Node) => {
-      const { x, y, type, variables } = node;
+      const { x, y, name, type, variables } = node;
       const nodeColor = getNodeColor(type);
 
       //
@@ -89,14 +89,7 @@ export function CanvasEditor() {
       ctx.font = `${TYPOGRAPHY.FONT_SIZE.TITLE}px ${TYPOGRAPHY.FONT_FAMILY}`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(type.toUpperCase(), x + 30, y + 20);
-
-      // Draw more menu indicator (three dots)
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "16px sans-serif";
-      ctx.textAlign = "right";
-      ctx.textBaseline = "middle";
-      ctx.fillText("...", x + CANVAS_CONSTANTS.NODE_WIDTH - 15, y + 20);
+      ctx.fillText(name.toUpperCase(), x + 30, y + 20);
 
       // Draw content area
       ctx.fillStyle = TYPOGRAPHY.COLORS.BODY;
@@ -200,7 +193,6 @@ export function CanvasEditor() {
     (ctx: CanvasRenderingContext2D, edge: Edge) => {
       const fromNode = nodes.find((node) => node.id === edge.source);
       const toNode = nodes.find((node) => node.id === edge.target);
-      console.log(fromNode);
       if (!fromNode || !toNode) return;
 
       const startX = fromNode.x + CANVAS_CONSTANTS.NODE_WIDTH;
