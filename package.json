@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:wc": "tsc -b && vite build --mode web-component && npx tailwindcss -o src/styles.css && cp src/styles.css dist/workflow-editor.css",
     "lint": "eslint .",
     "preview": "vite preview"
   },

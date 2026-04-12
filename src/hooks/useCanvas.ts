@@ -2,7 +2,7 @@ import { CANVAS_CONSTANTS } from "@/constants";
 import type { ConnectionHandle, Node } from "@/types/domain";
 import { useCallback, useRef } from "react";
 
-export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
+export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement | null>) => {
   /**
    * Handle canvas resize with proper DPI scaling
    */
