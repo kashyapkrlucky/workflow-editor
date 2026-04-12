@@ -46,7 +46,8 @@ export function Toolbar() {
       variables: {},
     };
     addNode(newNode);
-  }, [addNode]);
+    setIsLeftSidebarOpen(false);
+  }, [addNode, setIsLeftSidebarOpen]);
 
   return (
     <div className="w-12 relative">
