@@ -77,6 +77,7 @@ export function Sidebar() {
         <div className="flex flex-col gap-2">
           <div className="flex flex-row gap-2">
             <input
+              id="node-name"
               type="text"
               placeholder="Node name"
               className="w-full px-2 py-1 border border-gray-300 rounded-md text-xs"
@@ -89,6 +90,7 @@ export function Sidebar() {
               }
             />
             <select
+              id="node-type"
               className="w-full px-2 py-1 border border-gray-300 rounded-md text-xs"
               value={formData.nodeType}
               onChange={(e) =>
@@ -108,6 +110,7 @@ export function Sidebar() {
           </div>
           <div>
             <textarea
+              id="node-variables"
               className="w-full px-2 py-1 border border-gray-300 rounded-md text-xs code"
               placeholder="Variables (JSON)"
               rows={5}

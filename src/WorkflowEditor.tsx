@@ -9,7 +9,7 @@ export function WorkflowEditor() {
       <NavBar />
       <main className="flex-1 flex flex-row">
         <Toolbar />
-        <section className="w-full flex-1 relative">
+        <section className="w-full flex-1">
           <CanvasEditor />
         </section>
         <Sidebar />

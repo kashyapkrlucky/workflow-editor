@@ -401,8 +401,10 @@ export function CanvasEditor() {
 
   return (
     <canvas
-      className="w-full h-full bg-gray-50"
+      className="bg-gray-50 w-full h-full"
       ref={canvasRef}
+      width="1366"
+      height="768"
       onContextMenu={handleContextMenu}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
