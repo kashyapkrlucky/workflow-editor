@@ -1,11 +1,11 @@
-import { CANVAS_CONSTANTS, TYPOGRAPHY } from "@/constants";
+import { CANVAS_CONSTANTS, EDGE_COLORS, TYPOGRAPHY } from "@/constants";
 import {
   useCanvas,
   useMousePosition,
   useNodeAtPosition,
 } from "@/hooks/useCanvas";
-import { useNodes, useWorkflowStore } from "@/store/workflowStore";
-import type { Node } from "@/types/domain";
+import { useEdges, useNodes, useWorkflowStore } from "@/store/workflowStore";
+import type { Edge, Node } from "@/types/domain";
 import { getNodeColor } from "@/utils/canvas";
 import {
   useCallback,
@@ -18,15 +18,24 @@ import {
 export function CanvasEditor() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { setupCanvas, clearCanvas } = useCanvas(canvasRef);
-  const { selectedNodeId, setSelectedNode, updateNode } = useWorkflowStore();
+  const { selectedNodeId, setSelectedNode, updateNode, connectNodes } =
+    useWorkflowStore();
 
   const [isDragging, setIsDragging] = useState(false);
   const [draggedNode, setDraggedNode] = useState<string | null>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [sourceNode, setSourceNode] = useState<string | null>(null);
+  const [connectionStart, setConnectionStart] = useState({ x: 0, y: 0 });
+  const [connectionEnd, setConnectionEnd] = useState({ x: 0, y: 0 });
+
   const nodes = useNodes();
+  const edges = useEdges();
   const { getMousePosition } = useMousePosition(canvasRef);
-  const { getNodeAtPosition } = useNodeAtPosition(nodes);
+  const { getNodeAtPosition, getConnectionHandleAtPosition } =
+    useNodeAtPosition(nodes);
+  
   // Get canvas context
   const getCanvasContext = () => {
     const canvas = canvasRef.current;
@@ -184,6 +193,53 @@ export function CanvasEditor() {
     [selectedNodeId],
   );
 
+  /**
+   * Draw edge with arrow
+   */
+  const drawEdge = useCallback(
+    (ctx: CanvasRenderingContext2D, edge: Edge) => {
+      const fromNode = nodes.find((node) => node.id === edge.source);
+      const toNode = nodes.find((node) => node.id === edge.target);
+      console.log(fromNode);
+      if (!fromNode || !toNode) return;
+
+      const startX = fromNode.x + CANVAS_CONSTANTS.NODE_WIDTH;
+      const startY = fromNode.y + CANVAS_CONSTANTS.NODE_HEADER_HEIGHT / 2;
+      const endX = toNode.x;
+      const endY = toNode.y + CANVAS_CONSTANTS.NODE_HEADER_HEIGHT / 2;
+
+      // Calculate control points for bezier curve
+      const dx = endX - startX;
+      const cx1 = startX + dx * 0.5;
+      const cy1 = startY;
+      const cx2 = startX + dx * 0.5;
+      const cy2 = endY;
+
+      // Draw curved path
+      ctx.strokeStyle = EDGE_COLORS.DEFAULT;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.bezierCurveTo(cx1, cy1, cx2, cy2, endX, endY);
+      ctx.stroke();
+
+      // Draw arrowhead
+      const angle = Math.atan2(endY - cy2, endX - cx2);
+      ctx.save();
+      ctx.translate(endX, endY);
+      ctx.rotate(angle);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(-10, -5);
+      ctx.lineTo(-10, 5);
+      ctx.closePath();
+      ctx.fillStyle = EDGE_COLORS.DEFAULT;
+      ctx.fill();
+      ctx.restore();
+    },
+    [nodes],
+  );
+
   // Draw grid on canvas
   const drawGrid = useCallback(() => {
     const ctx = getCanvasContext();
@@ -213,11 +269,38 @@ export function CanvasEditor() {
     clearCanvas();
     drawGrid();
 
+    // Draw edges
+    Object.values(edges).forEach((edge) => {
+      drawEdge(ctx, edge);
+    });
+
+    // Draw temporary connection
+    if (isConnecting && connectionStart && connectionEnd) {
+      ctx.strokeStyle = EDGE_COLORS.TEMP;
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      ctx.beginPath();
+      ctx.moveTo(connectionStart.x, connectionStart.y);
+      ctx.lineTo(connectionEnd.x, connectionEnd.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
     // Draw nodes
     Object.values(nodes).forEach((node) => {
       drawNode(ctx, node);
     });
-  }, [clearCanvas, drawGrid, drawNode, nodes]);
+  }, [
+    clearCanvas,
+    drawGrid,
+    drawNode,
+    nodes,
+    isConnecting,
+    connectionStart,
+    connectionEnd,
+    edges,
+    drawEdge,
+  ]);
 
   // Handle context menu (right-click) on canvas
   const handleContextMenu = useCallback((e: MouseEvent<HTMLCanvasElement>) => {
@@ -233,6 +316,15 @@ export function CanvasEditor() {
       const y = e.clientY - rect.top;
       const node = getNodeAtPosition(x, y);
 
+      // Check for connection handles
+      const handle = getConnectionHandleAtPosition(x, y);
+      if (handle && handle.type === "source") {
+        setIsConnecting(true);
+        setSourceNode(handle.node.id);
+        setConnectionStart({ x: handle.x, y: handle.y });
+        setConnectionEnd({ x: handle.x, y: handle.y });
+        return;
+      }
       if (node) {
         setSelectedNode(node.id);
         setIsDragging(true);
@@ -242,7 +334,7 @@ export function CanvasEditor() {
         setSelectedNode(null);
       }
     },
-    [getNodeAtPosition, setSelectedNode],
+    [getNodeAtPosition, setSelectedNode, getConnectionHandleAtPosition],
   );
 
   // Handle mouse move
@@ -258,18 +350,43 @@ export function CanvasEditor() {
         if (node) {
           updateNode(node.id, { x: x - dragOffset.x, y: y - dragOffset.y });
         }
-      }
+      } else if (isConnecting && connectionStart) {
+        setConnectionEnd({ x, y });
+      } 
     },
-    [isDragging, draggedNode, nodes, dragOffset, getMousePosition, updateNode],
+    [isDragging, draggedNode, nodes, dragOffset, getMousePosition, updateNode, isConnecting, connectionStart],
   );
 
   // Handle mouse up
-  const handleMouseUp = useCallback((e: MouseEvent<HTMLCanvasElement>) => {
-    console.log("Mouse up", e);
-    setIsDragging(false);
-    setDraggedNode(null);
-    setDragOffset({ x: 0, y: 0 });
-  }, []);
+  const handleMouseUp = useCallback(
+    (e: MouseEvent<HTMLCanvasElement>) => {
+      if (isConnecting && sourceNode) {
+        const { x, y } = getMousePosition(e);
+        const handle = getConnectionHandleAtPosition(x, y);
+        if (
+          handle &&
+          handle.type === "target" &&
+          handle.node.id !== sourceNode
+        ) {
+          connectNodes(sourceNode, handle.node.id);
+        }
+      }
+      setIsDragging(false);
+      setDraggedNode(null);
+      setDragOffset({ x: 0, y: 0 });
+      setIsConnecting(false);
+      setConnectionStart({ x: 0, y: 0 });
+      setConnectionEnd({ x: 0, y: 0 });
+      setSourceNode(null);
+    },
+    [
+      isConnecting,
+      sourceNode,
+      getConnectionHandleAtPosition,
+      getMousePosition,
+      connectNodes,
+    ],
+  );
 
   // Setup canvas and drawing
   useEffect(() => {

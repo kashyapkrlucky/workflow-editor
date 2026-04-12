@@ -1,5 +1,5 @@
 import { CANVAS_CONSTANTS } from "@/constants";
-import type { Node } from "@/types/domain";
+import type { ConnectionHandle, Node } from "@/types/domain";
 import { useCallback, useRef } from "react";
 
 export const useCanvas = (canvasRef: React.RefObject<HTMLCanvasElement>) => {
@@ -74,25 +74,67 @@ export const useMousePosition = (
 export const useNodeAtPosition = (nodes: Node[]) => {
   const getNodeAtPosition = useCallback(
     (x: number, y: number): Node | null => {
-    const node = Object.values(nodes).find((node) =>
-      isPointInRect(
-        x,
-        y,
-        node.x,
-        node.y,
-        CANVAS_CONSTANTS.NODE_WIDTH,
-        CANVAS_CONSTANTS.NODE_HEIGHT,
-      ),
-    );
-    return node || null;
-  },
-  [nodes],
-);
+      const node = Object.values(nodes).find((node) =>
+        isPointInRect(
+          x,
+          y,
+          node.x,
+          node.y,
+          CANVAS_CONSTANTS.NODE_WIDTH,
+          CANVAS_CONSTANTS.NODE_HEIGHT,
+        ),
+      );
+      return node || null;
+    },
+    [nodes],
+  );
 
-  return { getNodeAtPosition };
+  const getConnectionHandleAtPosition = useCallback(
+    (x: number, y: number): ConnectionHandle | null => {
+      for (const node of Object.values(nodes)) {
+        // Check source handle (right side)
+        if (
+          isPointInCircle(
+            x,
+            y,
+            node.x + CANVAS_CONSTANTS.NODE_WIDTH,
+            node.y + CANVAS_CONSTANTS.NODE_HEADER_HEIGHT / 2,
+            CANVAS_CONSTANTS.HANDLE_RADIUS,
+          )
+        ) {
+          return {
+            x: node.x + CANVAS_CONSTANTS.NODE_WIDTH,
+            y: node.y + CANVAS_CONSTANTS.NODE_HEADER_HEIGHT / 2,
+            type: "source",
+            node,
+          };
+        }
+
+        // Check target handle (left side)
+        if (
+          isPointInCircle(
+            x,
+            y,
+            node.x,
+            node.y + CANVAS_CONSTANTS.NODE_HEADER_HEIGHT / 2,
+            CANVAS_CONSTANTS.HANDLE_RADIUS,
+          )
+        ) {
+          return {
+            x: node.x,
+            y: node.y + CANVAS_CONSTANTS.NODE_HEADER_HEIGHT / 2,
+            type: "target",
+            node,
+          };
+        }
+      }
+      return null;
+    },
+    [nodes],
+  );
+
+  return { getNodeAtPosition, getConnectionHandleAtPosition };
 };
-
-
 
 /**
  * Check if point is within rectangle bounds
@@ -111,4 +153,27 @@ export const isPointInRect = (
     pointY >= rectY &&
     pointY <= rectY + rectHeight
   );
+};
+
+/**
+ * Check if point is within circle bounds
+ */
+export const isPointInCircle = (
+  pointX: number,
+  pointY: number,
+  circleX: number,
+  circleY: number,
+  radius: number,
+): boolean => {
+  return calculateDistance(pointX, pointY, circleX, circleY) <= radius;
+};
+
+
+export const calculateDistance = (
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+): number => {
+  return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 };
