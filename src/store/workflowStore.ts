@@ -7,16 +7,16 @@ import { type Workflow, type Node, type Edge } from "@/types/domain";
  * Contains the workflow data, selection state, and all actions to manipulate the workflow.
  */
 interface WorkflowState {
-  workflow: Workflow;                                    // Current workflow with nodes and edges
-  selectedNodeId: string | null;                        // ID of the currently selected node
-  
+  workflow: Workflow; // Current workflow with nodes and edges
+  selectedNodeId: string | null; // ID of the currently selected node
+
   // Node management actions
-  addNode: (node: Node) => void;                        // Add a new node to the workflow
+  addNode: (node: Node) => void; // Add a new node to the workflow
   updateNode: (nodeId: string, updates: Partial<Node>) => void; // Update existing node properties
-  deleteNode: (nodeId: string) => void;                 // Remove a node from the workflow
-  
+  deleteNode: (nodeId: string) => void; // Remove a node from the workflow
+
   // Selection and connection actions
-  setSelectedNode: (nodeId: string | null) => void;      // Set the currently selected node
+  setSelectedNode: (nodeId: string | null) => void; // Set the currently selected node
   connectNodes: (fromNodeId: string, toNodeId: string) => void; // Create an edge between two nodes
 
   setWorkflow: (workflow: Workflow) => void;
@@ -30,11 +30,11 @@ interface WorkflowState {
 export const useWorkflowStore = create<WorkflowState>((set) => ({
   // Initial state
   workflow: {
-    nodes: [],    // Empty array of nodes initially
-    edges: [],    // Empty array of edges initially
+    nodes: [], // Empty array of nodes initially
+    edges: [], // Empty array of edges initially
   },
-  selectedNodeId: null,  // No node selected initially
-  
+  selectedNodeId: null, // No node selected initially
+
   /**
    * Adds a new node to the workflow.
    * @param node - The node to add to the workflow
@@ -46,7 +46,7 @@ export const useWorkflowStore = create<WorkflowState>((set) => ({
         nodes: [...state.workflow.nodes, node],
       },
     })),
-    
+
   /**
    * Updates an existing node with new properties.
    * @param nodeId - The ID of the node to update
@@ -67,7 +67,9 @@ export const useWorkflowStore = create<WorkflowState>((set) => ({
    */
   deleteNode: (nodeId: string) =>
     set((state) => {
-      const newNodes = state.workflow.nodes.filter((node) => node.id !== nodeId);
+      const newNodes = state.workflow.nodes.filter(
+        (node) => node.id !== nodeId,
+      );
       const newEdges = state.workflow.edges.filter(
         (edge) => edge.source !== nodeId && edge.target !== nodeId,
       );
@@ -79,7 +81,7 @@ export const useWorkflowStore = create<WorkflowState>((set) => ({
         },
       };
     }),
-    
+
   /**
    * Sets the currently selected node.
    * @param nodeId - The ID of the node to select, or null to deselect
@@ -98,7 +100,7 @@ export const useWorkflowStore = create<WorkflowState>((set) => ({
     set((state) => {
       const edgeId = `${fromNodeId}-${toNodeId}`;
       const existingEdge = Object.values(state.workflow.edges).find(
-        (edge: Edge) => edge.source === fromNodeId && edge.target === toNodeId
+        (edge: Edge) => edge.source === fromNodeId && edge.target === toNodeId,
       );
 
       // Don't create duplicate edges
@@ -107,22 +109,22 @@ export const useWorkflowStore = create<WorkflowState>((set) => ({
       const newEdge: Edge = {
         id: edgeId,
         source: fromNodeId,
-        target: toNodeId
+        target: toNodeId,
       };
 
       return {
         workflow: {
           ...state.workflow,
-          edges: [...state.workflow.edges, newEdge]
-        }
+          edges: [...state.workflow.edges, newEdge],
+        },
       };
     });
   },
 
   setWorkflow: (workflow: Workflow) => {
-    set({ 
+    set({
       workflow: { ...workflow },
-      selectedNodeId: null
+      selectedNodeId: null,
     });
   },
 
@@ -130,11 +132,11 @@ export const useWorkflowStore = create<WorkflowState>((set) => ({
     set({
       workflow: {
         nodes: [],
-        edges: []
+        edges: [],
       },
-      selectedNodeId: null
+      selectedNodeId: null,
     });
-  }
+  },
 }));
 
 // Selector hooks for accessing specific parts of the store state

@@ -64,3 +64,28 @@ export interface Message {
   timestamp: Date;               // When the message was created
   status?: "success" | "error" | "info"; // Optional status indicator for assistant messages
 }
+
+
+
+
+export interface WorkflowModificationData {
+  id?: string;
+  name?: string;
+  type?: string;
+  position?: { x: number; y: number };
+  variables?: Record<string, unknown>;
+  from?: string;
+  to?: string;
+}
+
+export interface WorkflowModification {
+  id?: string;
+  type: 'add_node' | 'connect_nodes' | 'modify_node' | 'delete_node';
+  data: WorkflowModificationData;
+}
+
+export interface AIServiceResponse {
+  message: string;
+  modifications?: WorkflowModification[];
+  success: boolean;
+}

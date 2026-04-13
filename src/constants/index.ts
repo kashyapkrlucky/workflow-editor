@@ -39,7 +39,7 @@ export const EDGE_COLORS = {
 export const TYPOGRAPHY = {
   FONT_FAMILY: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   FONT_SIZE: {
-    TITLE: 12,
+    TITLE: 11,
     BODY: 10,
     JSON: 9,
   },

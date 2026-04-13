@@ -89,7 +89,7 @@ export function CanvasEditor() {
       ctx.font = `${TYPOGRAPHY.FONT_SIZE.TITLE}px ${TYPOGRAPHY.FONT_FAMILY}`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillText(name.toUpperCase(), x + 30, y + 20);
+      ctx.fillText(name.toUpperCase(), x + CANVAS_CONSTANTS.NODE_WIDTH / 2, y + 20);
 
       // Draw content area
       ctx.fillStyle = TYPOGRAPHY.COLORS.BODY;
