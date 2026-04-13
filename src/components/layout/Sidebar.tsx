@@ -17,8 +17,6 @@ export function Sidebar() {
     "task",
     "end",
     "custom",
-    "create_policy",
-    "send_email",
   ];
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);

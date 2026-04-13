@@ -6,9 +6,7 @@ export type NodeType =
   | "start"           // Entry point of the workflow
   | "task"            // Generic task node
   | "end"             // Exit point of the workflow
-  | "custom"          // Custom user-defined node type
-  | "create_policy"   // Node for creating policies
-  | "send_email";     // Node for sending emails
+  | "custom";         // Custom user-defined node type
 
 /**
  * Represents a single node in the workflow graph.

@@ -35,7 +35,7 @@ export function CanvasEditor() {
   const { getMousePosition } = useMousePosition(canvasRef);
   const { getNodeAtPosition, getConnectionHandleAtPosition } =
     useNodeAtPosition(nodes);
-  
+
   // Get canvas context
   const getCanvasContext = () => {
     const canvas = canvasRef.current;
@@ -50,72 +50,172 @@ export function CanvasEditor() {
       const { x, y, name, type, variables } = node;
       const nodeColor = getNodeColor(type);
 
-      //
-      ctx.shadowColor = CANVAS_CONSTANTS.NODE_SHADOW;
-      ctx.shadowBlur = 10;
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 4;
+      const isPillNode = type === "start" || type === "end" || type === "task";
 
-      // Draw node background
-      ctx.fillStyle = "#ffffff";
-      ctx.beginPath();
-      ctx.roundRect(
-        x,
-        y,
-        CANVAS_CONSTANTS.NODE_WIDTH,
-        CANVAS_CONSTANTS.NODE_HEIGHT,
-        8,
-      );
-      ctx.fill();
+      if (isPillNode) {
+        // Draw basic node as pill-like design
+        const pillWidth = 120;
+        const pillHeight = 40;
+        const pillRadius = pillHeight / 2;
 
-      // Draw node border
-      ctx.strokeStyle = "#e5e7eb";
-      ctx.lineWidth = 1;
-      ctx.stroke();
+        // Draw shadow
+        ctx.shadowColor = CANVAS_CONSTANTS.NODE_SHADOW;
+        ctx.shadowBlur = 8;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 2;
 
-      // Draw header
-      ctx.fillStyle = nodeColor;
-      ctx.beginPath();
-      ctx.roundRect(
-        x,
-        y,
-        CANVAS_CONSTANTS.NODE_WIDTH,
-        CANVAS_CONSTANTS.NODE_HEADER_HEIGHT,
-        [8, 8, 0, 0],
-      );
-      ctx.fill();
+        // Draw pill background
+        ctx.fillStyle = nodeColor;
+        ctx.beginPath();
+        ctx.roundRect(x, y, pillWidth, pillHeight, pillRadius);
+        ctx.fill();
 
-      ctx.fillStyle = "#ffffff";
-      ctx.font = `${TYPOGRAPHY.FONT_SIZE.TITLE}px ${TYPOGRAPHY.FONT_FAMILY}`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(name.toUpperCase(), x + CANVAS_CONSTANTS.NODE_WIDTH / 2, y + 20);
+        // Reset shadow
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
 
-      // Draw content area
-      ctx.fillStyle = TYPOGRAPHY.COLORS.BODY;
-      ctx.font = `${TYPOGRAPHY.FONT_SIZE.BODY}px ${TYPOGRAPHY.FONT_FAMILY}`;
-      ctx.textAlign = "left";
-      ctx.textBaseline = "top";
-      ctx.fillText(
-        "Variables",
-        x + CANVAS_CONSTANTS.NODE_PADDING,
-        y + CANVAS_CONSTANTS.NODE_HEADER_HEIGHT + 12,
-      );
-
-      // Draw JSON preview
-      ctx.fillStyle = TYPOGRAPHY.COLORS.JSON;
-      ctx.font = `${TYPOGRAPHY.FONT_SIZE.JSON}px ${TYPOGRAPHY.FONT_FAMILY}`;
-      const jsonStr = JSON.stringify(variables || {});
-      const lines = jsonStr.match(/.{1,30}/g) || [];
-      lines.slice(0, 3).forEach((line, index) => {
+        // Draw text
+        ctx.fillStyle = "#ffffff";
+        ctx.font = `bold ${TYPOGRAPHY.FONT_SIZE.TITLE}px ${TYPOGRAPHY.FONT_FAMILY}`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
         ctx.fillText(
-          line,
-          x + CANVAS_CONSTANTS.NODE_PADDING,
-          y + CANVAS_CONSTANTS.NODE_HEADER_HEIGHT + 30 + index * 12,
+          name.toUpperCase(),
+          x + pillWidth / 2,
+          y + pillHeight / 2,
         );
-      });
 
-      if (type !== "end") {
+        // Draw connection handles
+        // Source handle (right) - only for start and end
+        if (type !== 'end') {
+          ctx.fillStyle = "#ffffff";
+          ctx.strokeStyle = nodeColor;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(x + pillWidth, y + pillHeight / 2, 6, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = nodeColor;
+          ctx.beginPath();
+          ctx.arc(x + pillWidth, y + pillHeight / 2, 3, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Target handle (left) - only for end
+        if (type !== 'start') {
+          ctx.fillStyle = "#ffffff";
+          ctx.strokeStyle = nodeColor;
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(x, y + pillHeight / 2, 6, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.fillStyle = nodeColor;
+          ctx.beginPath();
+          ctx.arc(x, y + pillHeight / 2, 3, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Highlight selected basic node
+        if (selectedNodeId === node.id) {
+          ctx.strokeStyle = nodeColor;
+          ctx.lineWidth = 3;
+          ctx.setLineDash([5, 5]);
+          ctx.beginPath();
+          ctx.roundRect(x - 3, y - 3, pillWidth + 6, pillHeight + 6, pillRadius + 3);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      } else {
+        // Draw custom node with current design
+        // Draw node shadow
+        ctx.shadowColor = CANVAS_CONSTANTS.NODE_SHADOW;
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 4;
+
+        // Draw node background with gradient
+        const gradient = ctx.createLinearGradient(
+          x,
+          y,
+          x,
+          y + CANVAS_CONSTANTS.NODE_HEIGHT,
+        );
+        gradient.addColorStop(0, "#ffffff");
+        gradient.addColorStop(1, "#f8fafc");
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.roundRect(
+          x,
+          y,
+          CANVAS_CONSTANTS.NODE_WIDTH,
+          CANVAS_CONSTANTS.NODE_HEIGHT,
+          8,
+        );
+        ctx.fill();
+
+        // Reset shadow
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+
+        // Draw border
+        ctx.strokeStyle = nodeColor;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Draw header
+        ctx.fillStyle = nodeColor;
+        ctx.beginPath();
+        ctx.roundRect(
+          x,
+          y,
+          CANVAS_CONSTANTS.NODE_WIDTH,
+          CANVAS_CONSTANTS.NODE_HEADER_HEIGHT,
+          [8, 8, 0, 0],
+        );
+        ctx.fill();
+
+        // Draw title
+        ctx.fillStyle = "#ffffff";
+        ctx.font = `bold ${TYPOGRAPHY.FONT_SIZE.TITLE}px ${TYPOGRAPHY.FONT_FAMILY}`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(
+          name.toUpperCase(),
+          x + CANVAS_CONSTANTS.NODE_WIDTH / 2,
+          y + CANVAS_CONSTANTS.NODE_HEADER_HEIGHT / 2,
+        );
+
+        // Draw content area
+        ctx.fillStyle = TYPOGRAPHY.COLORS.BODY;
+        ctx.font = `${TYPOGRAPHY.FONT_SIZE.BODY}px ${TYPOGRAPHY.FONT_FAMILY}`;
+        ctx.textAlign = "left";
+        ctx.textBaseline = "top";
+        ctx.fillText(
+          "Variables",
+          x + CANVAS_CONSTANTS.NODE_PADDING,
+          y + CANVAS_CONSTANTS.NODE_HEADER_HEIGHT + 12,
+        );
+
+        // Draw JSON preview
+        ctx.fillStyle = TYPOGRAPHY.COLORS.JSON;
+        ctx.font = `${TYPOGRAPHY.FONT_SIZE.JSON}px ${TYPOGRAPHY.FONT_FAMILY}`;
+        const jsonStr = JSON.stringify(variables || {});
+        const lines = jsonStr.match(/.{1,30}/g) || [];
+        lines.slice(0, 3).forEach((line, index) => {
+          ctx.fillText(
+            line,
+            x + CANVAS_CONSTANTS.NODE_PADDING,
+            y + CANVAS_CONSTANTS.NODE_HEADER_HEIGHT + 30 + index * 12,
+          );
+        });
+
         // Draw connection handles
         // Source handle (right)
         ctx.fillStyle = nodeColor;
@@ -139,9 +239,7 @@ export function CanvasEditor() {
           Math.PI * 2,
         );
         ctx.fill();
-      }
 
-      if (type !== "start") {
         // Target handle (left)
         ctx.fillStyle = nodeColor;
         ctx.beginPath();
@@ -164,23 +262,23 @@ export function CanvasEditor() {
           Math.PI * 2,
         );
         ctx.fill();
-      }
 
-      // Highlight selected node
-      if (selectedNodeId === node.id) {
-        ctx.strokeStyle = nodeColor;
-        ctx.lineWidth = 2;
-        ctx.setLineDash([3, 3]);
-        ctx.beginPath();
-        ctx.roundRect(
-          x - 2,
-          y - 2,
-          CANVAS_CONSTANTS.NODE_WIDTH + 4,
-          CANVAS_CONSTANTS.NODE_HEIGHT + 4,
-          8,
-        );
-        ctx.stroke();
-        ctx.setLineDash([]);
+        // Highlight selected custom node
+        if (selectedNodeId === node.id) {
+          ctx.strokeStyle = nodeColor;
+          ctx.lineWidth = 3;
+          ctx.setLineDash([5, 5]);
+          ctx.beginPath();
+          ctx.roundRect(
+            x - 2,
+            y - 2,
+            CANVAS_CONSTANTS.NODE_WIDTH + 4,
+            CANVAS_CONSTANTS.NODE_HEIGHT + 4,
+            8,
+          );
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
       }
     },
     [selectedNodeId],
@@ -195,10 +293,19 @@ export function CanvasEditor() {
       const toNode = nodes.find((node) => node.id === edge.target);
       if (!fromNode || !toNode) return;
 
-      const startX = fromNode.x + CANVAS_CONSTANTS.NODE_WIDTH;
-      const startY = fromNode.y + CANVAS_CONSTANTS.NODE_HEADER_HEIGHT / 2;
+      const isFromPillNode = fromNode.type === "start" || fromNode.type === "end" || fromNode.type === "task";
+      const isToPillNode = toNode.type === "start" || toNode.type === "end" || toNode.type === "task";
+
+      const startX = isFromPillNode 
+        ? fromNode.x + CANVAS_CONSTANTS.NODE_PILL_WIDTH 
+        : fromNode.x + CANVAS_CONSTANTS.NODE_WIDTH;
+      const startY = isFromPillNode 
+        ? fromNode.y + CANVAS_CONSTANTS.NODE_PILL_HEIGHT / 2 
+        : fromNode.y + CANVAS_CONSTANTS.NODE_HEADER_HEIGHT / 2;
       const endX = toNode.x;
-      const endY = toNode.y + CANVAS_CONSTANTS.NODE_HEADER_HEIGHT / 2;
+      const endY = isToPillNode 
+        ? toNode.y + CANVAS_CONSTANTS.NODE_PILL_HEIGHT / 2 
+        : toNode.y + CANVAS_CONSTANTS.NODE_HEADER_HEIGHT / 2;
 
       // Calculate control points for bezier curve
       const dx = endX - startX;
@@ -344,9 +451,18 @@ export function CanvasEditor() {
         }
       } else if (isConnecting && connectionStart) {
         setConnectionEnd({ x, y });
-      } 
+      }
     },
-    [isDragging, draggedNode, nodes, dragOffset, getMousePosition, updateNode, isConnecting, connectionStart],
+    [
+      isDragging,
+      draggedNode,
+      nodes,
+      dragOffset,
+      getMousePosition,
+      updateNode,
+      isConnecting,
+      connectionStart,
+    ],
   );
 
   // Handle mouse up

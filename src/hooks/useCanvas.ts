@@ -92,37 +92,50 @@ export const useNodeAtPosition = (nodes: Node[]) => {
   const getConnectionHandleAtPosition = useCallback(
     (x: number, y: number): ConnectionHandle | null => {
       for (const node of Object.values(nodes)) {
+        const isPillNode = node.type === "start" || node.type === "end" || node.type === "task";
+        
         // Check source handle (right side)
+        const sourceHandleX = isPillNode 
+          ? node.x + CANVAS_CONSTANTS.NODE_PILL_WIDTH 
+          : node.x + CANVAS_CONSTANTS.NODE_WIDTH;
+        const sourceHandleY = isPillNode 
+          ? node.y + CANVAS_CONSTANTS.NODE_PILL_HEIGHT / 2 
+          : node.y + CANVAS_CONSTANTS.NODE_HEADER_HEIGHT / 2;
+        
         if (
           isPointInCircle(
             x,
             y,
-            node.x + CANVAS_CONSTANTS.NODE_WIDTH,
-            node.y + CANVAS_CONSTANTS.NODE_HEADER_HEIGHT / 2,
+            sourceHandleX,
+            sourceHandleY,
             CANVAS_CONSTANTS.HANDLE_RADIUS,
           )
         ) {
           return {
-            x: node.x + CANVAS_CONSTANTS.NODE_WIDTH,
-            y: node.y + CANVAS_CONSTANTS.NODE_HEADER_HEIGHT / 2,
+            x: sourceHandleX,
+            y: sourceHandleY,
             type: "source",
             node,
           };
         }
 
         // Check target handle (left side)
+        const targetHandleY = isPillNode 
+          ? node.y + CANVAS_CONSTANTS.NODE_PILL_HEIGHT / 2 
+          : node.y + CANVAS_CONSTANTS.NODE_HEADER_HEIGHT / 2;
+        
         if (
           isPointInCircle(
             x,
             y,
             node.x,
-            node.y + CANVAS_CONSTANTS.NODE_HEADER_HEIGHT / 2,
+            targetHandleY,
             CANVAS_CONSTANTS.HANDLE_RADIUS,
           )
         ) {
           return {
             x: node.x,
-            y: node.y + CANVAS_CONSTANTS.NODE_HEADER_HEIGHT / 2,
+            y: targetHandleY,
             type: "target",
             node,
           };
