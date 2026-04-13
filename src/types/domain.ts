@@ -63,27 +63,34 @@ export interface Message {
   status?: "success" | "error" | "info"; // Optional status indicator for assistant messages
 }
 
-
-
-
+/**
+ * Data structure for workflow modifications requested by the AI.
+ * This is the structured data that the AI returns to describe what changes to make.
+ */
 export interface WorkflowModificationData {
   id: string;
   name?: string;
   type?: string;
   position?: { x: number; y: number };
   variables?: Record<string, unknown>;
-  from?: string;
-  to?: string;
   source?: string;
   target?: string;
 }
 
+/**
+ * Represents a workflow modification requested by the AI.
+ * This is the structured data that the AI returns to describe what changes to make.
+ */
 export interface WorkflowModification {
   id?: string;
-  type: 'add_node' | 'connect_nodes' | 'modify_node' | 'delete_node' | 'remove_connection';
+  type: 'add_node' | 'connect_nodes' | 'update_node' | 'delete_node' | 'remove_connection';
   data: WorkflowModificationData;
 }
 
+/**
+ * Represents a response from the AI service.
+ * This is the structured data that the AI returns to describe what changes to make.
+ */
 export interface AIServiceResponse {
   message: string;
   modifications?: WorkflowModification[];

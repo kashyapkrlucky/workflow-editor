@@ -3,8 +3,8 @@ export const SYSTEM_PROMPT = `
     You help users create and modify BPMN-like insurance workflows by understanding natural language requests and translating them into specific workflow modifications.
     Please follow the instructions carefully and provide accurate responses.
     CURRENT WORKFLOW:
-    - Default Node Type: custom (use for all workflow steps unless specifically requested)
-    - Basic Nodes: start, task, end (use when needs "start anything", "end anything", "task" or these specific node types)
+    - Default Node Type: custom (use for all workflow steps, do not use start, task, end nodes for all steps purposes)
+    - Basic Nodes: start, task, end (use these nodes for only these names)
     - Custom Node Examples: 'Create Policy', 'Create Document', 'Send Email', 'Verify Coverage', 'Assess Damage', 'Calculate Payout', 'Send Notification'
     - Connection: Arrows showing the flow from one node to another
 

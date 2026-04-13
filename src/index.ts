@@ -51,7 +51,7 @@ class WorkflowEditorWebComponent extends HTMLElement {
   }
 
   private loadStyles() {
-    // Load CSS file - it should be in the same directory as the JS file
+    // Load CSS file
     fetch('./workflow-editor.css')
       .then(response => response.text())
       .then(css => {

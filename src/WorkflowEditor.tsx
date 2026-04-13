@@ -5,6 +5,11 @@ import { Sidebar } from "./components/layout/Sidebar";
 import { AIAssist } from "./components/assistant/AIAssist";
 import { Notifications } from "./components/layout/Notifications";
 
+/**
+ * Workflow Editor Component
+ * Main container for the workflow editor application
+ * Contains all UI components: navbar, toolbar, canvas, sidebar, and AI assistant
+ */
 interface WorkflowEditorProps {
   aiConfig?: {
     apiKey?: string;

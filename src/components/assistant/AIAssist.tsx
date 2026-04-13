@@ -3,7 +3,7 @@ import { useState, useMemo } from "react";
 import { MessageCircleIcon, XIcon } from "lucide-react";
 import { AiService } from "@/services/AiService";
 import { useWorkflowStore } from "@/store/workflowStore";
-import type { Message, NodeType } from "@/types/domain";
+import type { Message, Node, NodeType } from "@/types/domain";
 import notifyService from "@/services/NotifyService";
 
 interface AIAssistProps {
@@ -19,14 +19,19 @@ export function AIAssist({ aiConfig }: AIAssistProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      content: "Hello! I'm your AI assistant. How can I help you create or modify your insurance workflow today?",
+      content: `Hello! I'm your AI assistant. How can I help you create or modify your insurance workflow today?
+Examples:
+- Add steps for a claim that was denied because of policy expiration
+- What are the tasks needed to process a standard car accident claim?
+- Create a workflow for water damage claim processing
+      `,
       type: "assistant",
       timestamp: new Date(),
     },
   ]);
 
   const workflowJson = JSON.stringify(workflow);
-  
+
   const aiService = useMemo(() => new AiService(aiConfig), [aiConfig]);
 
   const handleSendMessage = async (message: string) => {
@@ -35,7 +40,7 @@ export function AIAssist({ aiConfig }: AIAssistProps) {
         message,
         workflowJson,
       );
-      
+
       // Handle API key missing error
       if (!response.success && response.message.includes("OpenAI API key")) {
         notifyService.error(response.message);
@@ -44,42 +49,61 @@ export function AIAssist({ aiConfig }: AIAssistProps) {
 
       // If we have modifications, apply them to the workflow
       if (response.modifications && response.modifications.length > 0) {
-        const { addNode, connectNodes, deleteNode, removeConnection } = useWorkflowStore.getState();
+        const { addNode, connectNodes, updateNode, deleteNode, removeConnection } =
+          useWorkflowStore.getState();
         let nodesAdded = 0;
         let connectionsAdded = 0;
 
         // Process each modification
         for (const modification of response.modifications) {
+          console.log("modification", modification);
+          
           switch (modification.type) {
             case "add_node":
               if (modification.data.position && modification.data.name) {
-                const position = modification.data.position as { x: number; y: number };
-                
+                const position = modification.data.position as {
+                  x: number;
+                  y: number;
+                };
+
                 addNode({
                   id: modification.data.id,
                   x: position.x,
                   y: position.y,
                   name: modification.data.name as string,
                   type: (modification.data.type as NodeType) || "task",
-                  variables: (modification.data.variables as Record<string, string>) || {},
+                  variables:
+                    (modification.data.variables as Record<string, string>) ||
+                    {},
                 });
                 nodesAdded++;
               }
               break;
 
             case "connect_nodes":
-              if (modification.data.from && modification.data.to) {
-                const source = modification.data.from as string;
-                const target = modification.data.to as string;
+              if (modification.data.source && modification.data.target) {
+                const source = modification.data.source as string;
+                const target = modification.data.target as string;
                 // Get fresh workflow state to see newly added nodes
                 const freshWorkflow = useWorkflowStore.getState().workflow;
-                const nodeFrom = freshWorkflow.nodes.find((node) => node.id === source);
-                const nodeTo = freshWorkflow.nodes.find((node) => node.id === target);
+                const nodeFrom = freshWorkflow.nodes.find(
+                  (node) => node.id === source,
+                );
+                const nodeTo = freshWorkflow.nodes.find(
+                  (node) => node.id === target,
+                );
                 // Only connect if both nodes exist
                 if (nodeFrom && nodeTo) {
                   connectNodes(source, target);
                   connectionsAdded++;
                 }
+              }
+              break;
+
+            case "update_node":
+              if (modification.data.id) {
+                const nodeId = modification.data.id as string;
+                updateNode(nodeId, modification.data as Partial<Node>);
               }
               break;
 
@@ -108,19 +132,29 @@ export function AIAssist({ aiConfig }: AIAssistProps) {
         }
       } else if (!response.success) {
         // Show error notification for failed requests
-        notifyService.error("Could not process your request. Please try rephrasing your command.");
+        notifyService.error(
+          "Could not process your request. Please try rephrasing your command.",
+        );
       }
 
       return response.message;
     } catch (error) {
-      notifyService.error(`An unexpected error occurred. Please try again. ${error}`);
+      notifyService.error(
+        `An unexpected error occurred. Please try again. ${error}`,
+      );
       return "Sorry, I encountered an error processing your request.";
     }
   };
 
   return (
     <>
-      {isOpen && <ChatInterface onSendMessage={handleSendMessage} messages={messages} setMessages={setMessages} />}
+      {isOpen && (
+        <ChatInterface
+          onSendMessage={handleSendMessage}
+          messages={messages}
+          setMessages={setMessages}
+        />
+      )}
       <div className="fixed bottom-4 right-4">
         <button
           onClick={() => setIsOpen(!isOpen)}
