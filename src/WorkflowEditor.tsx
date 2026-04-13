@@ -4,7 +4,14 @@ import { CanvasEditor } from "./components/canvas/CanvasEditor";
 import { Sidebar } from "./components/layout/Sidebar";
 import { AIAssist } from "./components/assistant/AIAssist";
 
-export function WorkflowEditor() {
+interface WorkflowEditorProps {
+  aiConfig?: {
+    apiKey?: string;
+    model: string;
+  };
+}
+
+export function WorkflowEditor({ aiConfig }: WorkflowEditorProps) {
   return (
     <div className="flex flex-col h-screen">
       <NavBar />
@@ -15,7 +22,7 @@ export function WorkflowEditor() {
         </section>
         <Sidebar />
       </main>
-      <AIAssist />
+      <AIAssist aiConfig={aiConfig} />
     </div>
   );
 }

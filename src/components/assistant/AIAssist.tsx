@@ -1,16 +1,25 @@
 import { ChatInterface } from "./ChatInterface";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { MessageCircleIcon, XIcon } from "lucide-react";
-import { aiService } from "@/services/AiService";
+import { AiService } from "@/services/AiService";
 import { useWorkflowStore } from "@/store/workflowStore";
 import type { NodeType } from "@/types/domain";
 import notifyService from "@/services/NotifyService";
 
-export function AIAssist() {
+interface AIAssistProps {
+  aiConfig?: {
+    apiKey?: string;
+    model: string;
+  };
+}
+
+export function AIAssist({ aiConfig }: AIAssistProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { workflow } = useWorkflowStore();
 
   const workflowJson = JSON.stringify(workflow);
+  
+  const aiService = useMemo(() => new AiService(aiConfig), [aiConfig]);
 
   const handleSendMessage = async (message: string) => {
     try {

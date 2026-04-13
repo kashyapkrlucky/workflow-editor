@@ -2,9 +2,19 @@ import React from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { WorkflowEditor } from './WorkflowEditor';
 
+interface AIConfig {
+  apiKey?: string;
+  model: string;
+}
+
 class WorkflowEditorWebComponent extends HTMLElement {
   private root: Root | null = null;
   private shadow: ShadowRoot;
+  private aiConfig: AIConfig = { model: 'gpt-5.4-mini' };
+
+  static get observedAttributes() {
+    return ['api-key', 'model'];
+  }
 
   constructor() {
     super();
@@ -13,6 +23,7 @@ class WorkflowEditorWebComponent extends HTMLElement {
   }
 
   connectedCallback() {
+    this.updateConfig();
     this.loadStyles();
     this.render();
   }
@@ -21,6 +32,22 @@ class WorkflowEditorWebComponent extends HTMLElement {
     if (this.root) {
       this.root.unmount();
     }
+  }
+
+  attributeChangedCallback(_name: string, oldValue: string, newValue: string) {
+    if (oldValue === newValue) return;
+    this.updateConfig();
+    this.render();
+  }
+
+  private updateConfig() {
+    const apiKey = this.getAttribute('api-key');
+    const model = this.getAttribute('model') || 'gpt-5.4-mini';
+    
+    this.aiConfig = {
+      apiKey: apiKey || undefined,
+      model
+    };
   }
 
   private loadStyles() {
@@ -42,7 +69,7 @@ class WorkflowEditorWebComponent extends HTMLElement {
       this.root = createRoot(this.shadow);
     }
 
-    this.root.render(React.createElement(WorkflowEditor));
+    this.root.render(React.createElement(WorkflowEditor, { aiConfig: this.aiConfig }));
   }
 }
 

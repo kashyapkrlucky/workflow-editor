@@ -4,11 +4,13 @@ import { SYSTEM_PROMPT, USER_PROMPT } from "@/utils/aiassist";
 export type AIServiceType = "openai";
 
 export class AiService {
-  private apiKey: string;
+  private apiKey?: string;
   private baseUrl: string;
+  private model: string;
 
-  constructor() {
-    this.apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+  constructor(config?: { apiKey?: string; model: string }) {
+    this.apiKey = config?.apiKey || import.meta.env.VITE_OPENAI_API_KEY;
+    this.model = config?.model || 'gpt-5.4-mini';
     this.baseUrl = "https://api.openai.com/v1";
   }
 
@@ -46,7 +48,7 @@ export class AiService {
           Authorization: `Bearer ${this.apiKey}`,
         },
         body: JSON.stringify({
-          model: "gpt-5.4-mini",
+          model: this.model,
           messages: [
             {
               role: "system",
