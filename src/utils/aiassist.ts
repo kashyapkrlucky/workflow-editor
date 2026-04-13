@@ -31,7 +31,7 @@ export const SYSTEM_PROMPT = `
         {
             "id": "source_node_id-to_target_node_id",
             "type": "connect_nodes",
-            "data": { "from": "source_node_id", "to": "target_node_id" }
+            "data": { "source": "source_node_id", "target": "target_node_id" }
         }]
     }
 

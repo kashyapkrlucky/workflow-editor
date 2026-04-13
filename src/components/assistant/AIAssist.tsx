@@ -44,7 +44,7 @@ export function AIAssist({ aiConfig }: AIAssistProps) {
 
       // If we have modifications, apply them to the workflow
       if (response.modifications && response.modifications.length > 0) {
-        const { addNode, connectNodes, deleteNode } = useWorkflowStore.getState();
+        const { addNode, connectNodes, deleteNode, removeConnection } = useWorkflowStore.getState();
         let nodesAdded = 0;
         let connectionsAdded = 0;
 
@@ -87,6 +87,14 @@ export function AIAssist({ aiConfig }: AIAssistProps) {
               if (modification.data.id) {
                 const nodeId = modification.data.id as string;
                 deleteNode(nodeId);
+              }
+              break;
+
+            case "remove_connection":
+              if (modification.data.source && modification.data.target) {
+                const source = modification.data.source as string;
+                const target = modification.data.target as string;
+                removeConnection(source, target);
               }
               break;
           }

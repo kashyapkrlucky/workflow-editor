@@ -74,11 +74,13 @@ export interface WorkflowModificationData {
   variables?: Record<string, unknown>;
   from?: string;
   to?: string;
+  source?: string;
+  target?: string;
 }
 
 export interface WorkflowModification {
   id?: string;
-  type: 'add_node' | 'connect_nodes' | 'modify_node' | 'delete_node';
+  type: 'add_node' | 'connect_nodes' | 'modify_node' | 'delete_node' | 'remove_connection';
   data: WorkflowModificationData;
 }
 

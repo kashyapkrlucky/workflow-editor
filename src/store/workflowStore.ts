@@ -18,7 +18,7 @@ interface WorkflowState {
   // Selection and connection actions
   setSelectedNode: (nodeId: string | null) => void; // Set the currently selected node
   connectNodes: (fromNodeId: string, toNodeId: string) => void; // Create an edge between two nodes
-
+  removeConnection: (sourceNodeId: string, targetNodeId: string) => void; // Remove a connection between two nodes
   setWorkflow: (workflow: Workflow) => void;
   clearWorkflow: () => void;
 }
@@ -116,6 +116,20 @@ export const useWorkflowStore = create<WorkflowState>((set) => ({
         workflow: {
           ...state.workflow,
           edges: [...state.workflow.edges, newEdge],
+        },
+      };
+    });
+  },
+
+  removeConnection: (sourceNodeId: string, targetNodeId: string) => {
+    set((state) => {
+      const newEdges = state.workflow.edges.filter(
+        (edge) => !(edge.source === sourceNodeId && edge.target === targetNodeId),
+      );
+      return {
+        workflow: {
+          ...state.workflow,
+          edges: newEdges,
         },
       };
     });
