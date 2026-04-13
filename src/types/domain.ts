@@ -52,3 +52,15 @@ export interface ConnectionHandle {
   type: "source" | "target";    // Whether this handle outputs or accepts connections
   node: Node;                   // Reference to the parent node this handle belongs to
 }
+
+/**
+ * Represents a message in the chat interface.
+ * Messages can be user-generated or AI-generated responses.
+ */
+export interface Message {
+  id: string;                    // Unique identifier for the message
+  type: "user" | "assistant";    // Type of message (user or assistant)
+  content: string;               // The actual message content
+  timestamp: Date;               // When the message was created
+  status?: "success" | "error" | "info"; // Optional status indicator for assistant messages
+}

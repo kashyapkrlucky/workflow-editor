@@ -2,6 +2,7 @@ import { NavBar } from "./components/layout/NavBar";
 import { Toolbar } from "./components/layout/Toolbar";
 import { CanvasEditor } from "./components/canvas/CanvasEditor";
 import { Sidebar } from "./components/layout/Sidebar";
+import { AIAssist } from "./components/assistant/AIAssist";
 
 export function WorkflowEditor() {
   return (
@@ -14,6 +15,7 @@ export function WorkflowEditor() {
         </section>
         <Sidebar />
       </main>
+      <AIAssist />
     </div>
-  )
+  );
 }

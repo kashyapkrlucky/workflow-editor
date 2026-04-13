@@ -46,13 +46,13 @@ export function NavBar() {
       <div>Workflow Editor</div>
       <div className="flex gap-2">
         <button
-          className="px-2 py-1 bg-gray-500 text-white rounded-md text-xs cursor-pointer"
+          className="px-3 py-1.5 border border-gray-300 rounded-md text-xs cursor-pointer"
           onClick={handleExport}
         >
           Export
         </button>
         <label
-          className="px-2 py-1 bg-gray-500 text-white rounded-md text-xs cursor-pointer"
+          className="px-3 py-1.5 bg-gradient-to-t from-indigo-600 to-blue-600 text-white rounded-md text-xs cursor-pointer"
           title="Import Workflow"
         >
           <span>Import</span>
@@ -64,6 +64,7 @@ export function NavBar() {
             onChange={handleImport}
           />
         </label>
+        
       </div>
     </header>
   );

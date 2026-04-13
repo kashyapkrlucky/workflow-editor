@@ -52,3 +52,12 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}

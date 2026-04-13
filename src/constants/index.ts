@@ -60,3 +60,13 @@ export const Z_INDEX = {
   NODES: 3,
   HANDLES: 4,
 } as const;
+
+
+
+export const CONTENT = {
+  assistant: {
+    name: "Workflow Assistant",
+    description: "Powered by OpenAI",
+    initialMessage: "Hello! How can I help you today?",
+  },
+} as const;
