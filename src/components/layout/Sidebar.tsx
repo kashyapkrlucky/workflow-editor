@@ -2,6 +2,7 @@ import { useWorkflowStore } from "@/store/workflowStore";
 import type { NodeType } from "@/types/domain";
 import { useEffect, useState } from "react";
 import { Modal } from "../common/Modal";
+import notifyService from "@/services/NotifyService";
 
 export function Sidebar() {
   const { workflow, selectedNodeId, updateNode, deleteNode } =
@@ -65,6 +66,7 @@ export function Sidebar() {
     if (selectedNodeId) {
       deleteNode(selectedNodeId);
       setIsDeleteModalOpen(false);
+      notifyService.success("Node deleted successfully", 1500);
     }
   };
 
@@ -178,3 +180,4 @@ export function Sidebar() {
     </div>
   );
 }
+

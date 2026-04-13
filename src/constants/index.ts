@@ -62,11 +62,24 @@ export const Z_INDEX = {
 } as const;
 
 
-
+/**
+ * AI Assistant Content
+ */
 export const CONTENT = {
   assistant: {
     name: "Workflow Assistant",
     description: "Powered by OpenAI",
     initialMessage: "Hello! How can I help you today?",
   },
+} as const;
+
+
+/**
+ * Notify Colors
+ */
+export const NOTIFY_COLORS = {
+  success: "bg-green-600",
+  error: "bg-red-600",
+  info: "bg-blue-600",
+  warning: "bg-amber-600",
 } as const;
