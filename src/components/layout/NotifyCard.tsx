@@ -19,7 +19,7 @@ export const NotifyCard = ({ message, type, duration = 3000, onClose }: NotifyCa
   }, [duration, memoizedOnClose])
   
   return (
-    <div className={`${NOTIFY_COLORS[type]} text-white text-xs animate-fade-in py-1 px-2 rounded-md shadow-lg`}>
+    <div className={`${NOTIFY_COLORS[type]} text-white text-xs py-4 px-6 rounded-lg shadow-lg flex flex-row justify-between items-center shadow-lg animate-slide-up`}>
       {message}
       <button className="ml-2 text-white hover:text-gray-200" onClick={memoizedOnClose}>✕</button>
     </div>

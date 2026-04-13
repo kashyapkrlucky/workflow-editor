@@ -3,6 +3,7 @@ import { Toolbar } from "./components/layout/Toolbar";
 import { CanvasEditor } from "./components/canvas/CanvasEditor";
 import { Sidebar } from "./components/layout/Sidebar";
 import { AIAssist } from "./components/assistant/AIAssist";
+import { Notifications } from "./components/layout/Notifications";
 
 interface WorkflowEditorProps {
   aiConfig?: {
@@ -23,6 +24,8 @@ export function WorkflowEditor({ aiConfig }: WorkflowEditorProps) {
         <Sidebar />
       </main>
       <AIAssist aiConfig={aiConfig} />
+
+      <Notifications />
     </div>
   );
 }

@@ -64,7 +64,7 @@ export function Sidebar() {
     if (selectedNodeId) {
       deleteNode(selectedNodeId);
       setIsDeleteModalOpen(false);
-      notifyService.success("Node deleted successfully", 1500);
+      notifyService.success("Node deleted successfully", 5000);
     }
   };
 
@@ -111,7 +111,8 @@ export function Sidebar() {
           <div>
             <textarea
               id="node-variables"
-              className="w-full px-2 py-1 border border-gray-300 rounded-md text-xs code"
+              disabled={selectedNode.type !== "custom"}
+              className="w-full px-2 py-1 border border-gray-300 rounded-md text-xs code disabled:bg-gray-100 disabled:cursor-not-allowed"
               placeholder="Variables (JSON)"
               rows={5}
               value={formData.nodeVariables}
@@ -146,7 +147,7 @@ export function Sidebar() {
       </p>
       <textarea
         className="w-full px-2 py-1 border border-gray-300 rounded-md text-xs"
-        rows={10}
+        rows={30}
         value={JSON.stringify(workflow, null, 2)}
         placeholder="Workflow JSON"
         readOnly
