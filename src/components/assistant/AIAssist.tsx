@@ -3,7 +3,7 @@ import { useState, useMemo } from "react";
 import { MessageCircleIcon, XIcon } from "lucide-react";
 import { AiService } from "@/services/AiService";
 import { useWorkflowStore } from "@/store/workflowStore";
-import type { NodeType } from "@/types/domain";
+import type { Message, NodeType } from "@/types/domain";
 import notifyService from "@/services/NotifyService";
 
 interface AIAssistProps {
@@ -16,6 +16,14 @@ interface AIAssistProps {
 export function AIAssist({ aiConfig }: AIAssistProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { workflow } = useWorkflowStore();
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: "1",
+      content: "Hello! I'm your AI assistant. How can I help you create or modify your insurance workflow today?",
+      type: "assistant",
+      timestamp: new Date(),
+    },
+  ]);
 
   const workflowJson = JSON.stringify(workflow);
   
@@ -104,7 +112,7 @@ export function AIAssist({ aiConfig }: AIAssistProps) {
 
   return (
     <>
-      {isOpen && <ChatInterface onSendMessage={handleSendMessage} />}
+      {isOpen && <ChatInterface onSendMessage={handleSendMessage} messages={messages} setMessages={setMessages} />}
       <div className="fixed bottom-4 right-4">
         <button
           onClick={() => setIsOpen(!isOpen)}

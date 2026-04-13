@@ -67,7 +67,7 @@ export interface Message {
 
 
 export interface WorkflowModificationData {
-  id?: string;
+  id: string;
   name?: string;
   type?: string;
   position?: { x: number; y: number };

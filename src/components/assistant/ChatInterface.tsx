@@ -10,18 +10,12 @@ import {
 
 interface ChatInterfaceProps {
   onSendMessage: (message: string) => Promise<string>;
+  messages: Message[];
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }
 
-export function ChatInterface({ onSendMessage }: ChatInterfaceProps) {
+export function ChatInterface({ onSendMessage, messages, setMessages }: ChatInterfaceProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      content: CONTENT.assistant.initialMessage,
-      type: "assistant",
-      timestamp: new Date(),
-    },
-  ]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
