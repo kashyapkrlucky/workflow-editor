@@ -179,5 +179,3 @@ The AI returns structured JSON responses:
   ]
 }
 ```
-
-**Built for the EMIL Group Senior Frontend Engineer AI Position Challenge**
